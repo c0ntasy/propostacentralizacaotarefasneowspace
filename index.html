@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta de Centralização das Demandas Operacionais no New Space</title>
+<style>
+:root{--p:#d6336c;--p-d:#a61e4d;--p-m:#f06595;--p-l:#fcc2d7;--p-xl:#fff0f6;--ink:#2b2230;--mut:#6b6270;--line:#f1dce5;--bg:#faf6f8}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{max-width:920px;margin:0 auto;background:#fff;box-shadow:0 10px 40px rgba(166,30,77,.08)}
+.cover{background:linear-gradient(135deg,var(--p-d),var(--p) 60%,var(--p-m));color:#fff;padding:64px 48px 56px}
+.cover .tag{display:inline-block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid rgba(255,255,255,.6);border-radius:99px;padding:4px 14px;margin-bottom:22px}
+.cover h1{font-size:2.1rem;line-height:1.2;font-weight:700;letter-spacing:.01em}
+.cover p{margin-top:16px;font-size:1.1rem;max-width:620px;opacity:.95}
+nav{display:flex;flex-wrap:wrap;gap:8px;padding:14px 48px;border-bottom:1px solid var(--line);background:var(--p-xl)}
+nav a{font-size:.82rem;color:var(--p-d);text-decoration:none;padding:4px 12px;border-radius:99px;border:1px solid var(--p-l);background:#fff}
+nav a:hover{background:var(--p);color:#fff}
+section{padding:40px 48px 8px}
+h2{display:flex;align-items:center;gap:14px;font-size:1.4rem;color:var(--p-d);margin-bottom:18px}
+h2 .n{flex:none;width:38px;height:38px;border-radius:10px;background:var(--p);color:#fff;display:grid;place-items:center;font-size:1rem}
+h2::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--p-l),transparent)}
+p.lead{margin-bottom:14px}
+.box{background:var(--p-xl);border-left:4px solid var(--p);border-radius:8px;padding:16px 20px;margin:18px 0}
+ul.chk{list-style:none}
+ul.chk li{position:relative;padding:5px 0 5px 30px}
+ul.chk li::before{content:"✓";position:absolute;left:0;top:7px;width:20px;height:20px;border-radius:50%;background:var(--p);color:#fff;font-size:.72rem;display:grid;place-items:center}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:6px}
+.card{border:1px solid var(--line);border-top:4px solid var(--p);border-radius:12px;padding:20px;background:#fff;break-inside:avoid;page-break-inside:avoid}
+.card .num{font-size:.8rem;font-weight:700;color:var(--p);letter-spacing:.1em}
+.card h3{font-size:1.02rem;color:var(--ink);margin:4px 0 8px;line-height:1.35}
+.card p{font-size:.92rem;color:var(--mut);margin-bottom:10px}
+.card h4{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p-d);margin-bottom:4px}
+.card ul{padding-left:18px;font-size:.9rem}
+.card li{margin:3px 0}
+.card li::marker{color:var(--p-m)}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin-top:6px}
+.ch{border-radius:12px;padding:22px;break-inside:avoid;page-break-inside:avoid}
+.ch small{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.ch h3{font-size:1.2rem;margin:2px 0 12px}
+.ch.d{background:#f4f1f6;border:1px solid #e3dde8}
+.ch.d h3{color:#4a3f55}
+.ch.n{background:linear-gradient(160deg,var(--p-d),var(--p));color:#fff}
+.ch ul{list-style:none}
+.ch li{padding:5px 0 5px 20px;position:relative;font-size:.92rem}
+.ch li::before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.6}
+.arrow{align-self:center;font-size:1.6rem;color:var(--p);font-weight:700}
+.ben{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.ben div{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);background:var(--p-xl);border-radius:10px;padding:14px 16px;font-size:.94rem;break-inside:avoid;page-break-inside:avoid}
+.ben span{flex:none;width:28px;height:28px;border-radius:8px;background:var(--p);color:#fff;display:grid;place-items:center;font-size:.9rem}
+footer{margin-top:36px;padding:18px 48px;border-top:1px solid var(--line);font-size:.8rem;color:var(--mut);text-align:center}
+.pbtn{position:fixed;right:18px;bottom:18px;z-index:9;background:#fff;color:var(--p-d);border:1px solid var(--p-l);border-radius:99px;padding:9px 18px;font-size:.85rem;cursor:pointer;box-shadow:0 4px 14px rgba(166,30,77,.18);opacity:.85}
+.pbtn:hover{background:var(--p);color:#fff;opacity:1}
+@media(max-width:720px){.cover{padding:44px 24px 40px}.cover h1{font-size:1.5rem}nav,section,footer{padding-left:24px;padding-right:24px}.grid,.ben{grid-template-columns:1fr}.vs{grid-template-columns:1fr}.arrow{transform:rotate(90deg);justify-self:center}}
+.extras{margin-top:22px;display:grid;gap:18px}
+.add-btn{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--p-d);border:2px dashed var(--p-m);border-radius:12px;padding:12px 20px;font-size:.95rem;font-weight:600;cursor:pointer;width:100%;justify-content:center}
+.add-btn span{width:26px;height:26px;border-radius:50%;background:var(--p);color:#fff;display:grid;place-items:center;font-size:1.2rem;line-height:1}
+.add-btn:hover{background:var(--p-xl)}
+.add-form{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--p-xl);display:grid;gap:12px}
+.add-form[hidden]{display:none}
+.add-form label{display:grid;gap:4px;font-size:.82rem;font-weight:600;color:var(--p-d)}
+input[type=text],.extras textarea{font:inherit;font-size:.92rem;color:var(--ink);border:1px solid var(--p-l);border-radius:8px;padding:9px 12px;background:#fff;width:100%;resize:vertical}
+input[type=text]:focus,.extras textarea:focus{outline:2px solid var(--p-m);outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.b-main{background:var(--p);color:#fff;border:0;border-radius:8px;padding:9px 18px;font-size:.9rem;cursor:pointer}
+.b-main:hover{background:var(--p-d)}
+.b-ghost{background:#fff;color:var(--p-d);border:1px solid var(--p-l);border-radius:8px;padding:9px 18px;font-size:.9rem;cursor:pointer}
+.comments{border-top-color:var(--p-d)}
+.comments textarea{margin-top:4px}
+.status{display:block;margin-top:6px;color:var(--mut);min-height:1em}
+.print-comment{display:none;white-space:pre-wrap;font-size:.92rem}
+.rm{float:right;background:none;border:0;color:var(--mut);cursor:pointer;font-size:.8rem}
+.rm:hover{color:var(--p-d)}
+.card.custom{border-top-color:var(--p-d)}
+.thread .msgs{display:grid;gap:10px;margin:10px 0}
+.thread .msgs:empty{display:none}
+.msg{border:1px solid var(--line);border-left:4px solid var(--p);border-radius:10px;padding:10px 14px;background:#fff;font-size:.9rem}
+.msg .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;font-size:.78rem;color:var(--mut);margin-bottom:3px}
+.msg .meta b{color:var(--p-d);font-size:.86rem}
+.msg .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.done{background:#f7f4f8;border-left-color:#b9aec2;color:var(--mut)}
+.msg .foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;font-size:.78rem}
+.badge{background:#e6f7ec;color:#1f7a45;border-radius:99px;padding:1px 10px;font-weight:600}
+.dbtn{background:none;border:1px solid var(--p-l);color:var(--p-d);border-radius:99px;padding:2px 12px;font-size:.78rem;cursor:pointer}
+.dbtn:hover{background:var(--p);color:#fff}
+.composer{display:grid;grid-template-columns:150px 1fr auto;gap:8px;align-items:start;margin-top:8px}
+.composer input,.composer textarea{font:inherit;font-size:.88rem;border:1px solid var(--p-l);border-radius:8px;padding:8px 10px;background:var(--p-xl);width:100%;resize:none;color:var(--ink)}
+.composer .hint{grid-column:1/-1;font-size:.74rem;color:var(--mut)}
+@media(max-width:720px){.composer{grid-template-columns:1fr}.composer .send{justify-self:end}}
+.cnote{margin-top:14px;padding-top:12px;border-top:1px dashed var(--p-l)}
+.cnote label{display:block;font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--p-d);margin-bottom:4px;font-weight:600}
+.cnote textarea{font:inherit;font-size:.88rem;color:var(--ink);border:1px solid var(--p-l);border-radius:8px;padding:8px 10px;background:var(--p-xl);width:100%;resize:vertical}
+.cnote textarea:focus{outline:2px solid var(--p-m);outline-offset:1px}
+@media(max-width:720px){.add-btn{font-size:.9rem}}
+@page{size:A4;margin:14mm}
+@media print{
+body{background:#fff;font-size:10.5pt}
+.page{max-width:none;box-shadow:none}
+.pbtn,nav,.add-wrap,.rm,.status,#comments,.composer,.dbtn{display:none!important}
+.print-comment{display:block}
+.cnote:not(:has(.msg)){display:none}
+.msg{break-inside:avoid;page-break-inside:avoid}
+.extras{break-inside:avoid}
+.print-comment:empty::before{content:"Sem comentários registrados.";color:var(--mut)}
+.cover{padding:28px 26px;border-radius:10px;break-after:avoid}
+.cover h1{font-size:20pt}
+section{padding:18px 0 4px}
+h2{break-after:avoid;page-break-after:avoid}
+.grid{gap:12px}.card{padding:14px}
+.cat{break-before:page;page-break-before:always}
+.vs{grid-template-columns:1fr auto 1fr}
+.arrow{transform:none}
+.grid{grid-template-columns:repeat(2,1fr)}
+.ben{grid-template-columns:repeat(2,1fr)}
+footer{padding:10px 0}
+a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<button class="pbtn" onclick="window.print()" title="Abre a impressão do navegador">Salvar como PDF</button>
+<div class="page">
+<header class="cover">
+<span class="tag">Proposta interna</span>
+<h1>PROPOSTA DE CENTRALIZAÇÃO DAS DEMANDAS OPERACIONAIS NO NEW SPACE</h1>
+<p>Organização, acompanhamento e rastreabilidade das solicitações realizadas aos contadores.</p>
+</header>
+<nav>
+<a href="#s1">1. Contexto e objetivo</a><a href="#s2">2. Solicitações</a><a href="#s3">3. Canais</a><a href="#s4">4. Benefícios</a><a href="#s5">5. Implantação</a>
+</nav>
+
+<section id="s1">
+<h2><span class="n">1</span>Contexto e objetivo</h2>
+<p class="lead">Atualmente, diversas solicitações operacionais são realizadas diretamente nos tópicos do Discord, por meio de mensagens direcionadas aos contadores.</p>
+<p class="lead">A proposta é migrar gradualmente essas solicitações para o New Space, utilizando a abertura de tarefas como forma de centralizar, organizar e acompanhar melhor as demandas.</p>
+<p class="lead"><strong>O objetivo é:</strong></p>
+<ul class="chk">
+<li>Centralizar as solicitações em um único ambiente.</li>
+<li>Facilitar o acompanhamento do andamento de cada demanda.</li>
+<li>Manter um histórico das atividades realizadas.</li>
+<li>Evitar que pedidos se percam em meio às conversas do Discord.</li>
+<li>Permitir visualizar e contabilizar o volume de demandas recebidas.</li>
+<li>Identificar os tipos de solicitações mais recorrentes.</li>
+</ul>
+<div class="box">O Discord continuará sendo utilizado para dúvidas rápidas, conversas e alinhamentos. Já as solicitações que exigem ação, análise ou execução dos contadores deverão ser registradas no New Space.</div>
+</section>
+
+<section id="s2" class="cat">
+<h2><span class="n">2</span>Solicitações que podem ser centralizadas no New Space:</h2>
+<div class="grid" id="cards"></div>
+
+<div class="extras">
+<div class="add-wrap">
+<button type="button" class="add-btn" id="addBtn" aria-expanded="false" title="Adicionar nova solicitação"><span>+</span> Adicionar nova solicitação</button>
+<form class="add-form" id="addForm" hidden onsubmit="return false">
+<label>Título<input type="text" id="fTitle" placeholder="Ex.: Solicitação de ..."></label>
+<label>Descrição<textarea id="fDesc" rows="3" placeholder="Quando esta solicitação deve ser aberta"></textarea></label>
+<label>Exemplos (um por linha)<textarea id="fEx" rows="4"></textarea></label>
+<div class="row"><button type="button" class="b-main" id="fSave">Salvar solicitação</button><button type="button" class="b-ghost" id="fCancel">Cancelar</button></div>
+</form>
+</div>
+<div class="comments card">
+<h3>Sugestões e comentários</h3>
+<p>Espaço para os gestores registrarem comentários, justificativas, ajustes ou sugestões de melhoria sobre as categorias apresentadas.</p>
+<div class="thread-slot" data-key="geral"></div>
+</div>
+</div>
+</section>
+
+<section id="s3">
+<h2><span class="n">3</span>Divisão da utilização dos canais</h2>
+<div class="vs">
+<div class="ch d"><small>Discord</small><h3>Comunicação</h3>
+<ul><li>Dúvidas rápidas.</li><li>Conversas e alinhamentos.</li><li>Troca de informações.</li><li>Orientações pontuais.</li><li>Comunicações que não exigem abertura ou acompanhamento de uma solicitação.</li></ul></div>
+<div class="arrow" aria-hidden="true">→</div>
+<div class="ch n"><small>New Space</small><h3>Execução e acompanhamento</h3>
+<ul><li>Solicitações que exigem execução dos contadores.</li><li>Análises e conferências fiscais.</li><li>Regularizações e retificações.</li><li>Emissão e atualização de guias.</li><li>Demandas que precisam de responsável, acompanhamento e registro de conclusão.</li></ul></div>
+</div>
+<div class="box"><strong>Ideia central:</strong> o Discord continua sendo o canal de comunicação, enquanto o New Space passa a concentrar as solicitações operacionais.</div>
+</section>
+
+<section id="s4">
+<h2><span class="n">4</span>Benefícios esperados</h2>
+<div class="ben">
+<div><span>▤</span>Maior organização das demandas operacionais.</div>
+<div><span>◎</span>Melhor acompanhamento das solicitações.</div>
+<div><span>☺</span>Clareza sobre quem é responsável por cada atividade.</div>
+<div><span>⟲</span>Histórico centralizado e rastreável.</div>
+<div><span>✉</span>Redução de solicitações perdidas nas conversas.</div>
+<div><span>▥</span>Visibilidade sobre o volume de trabalho dos contadores.</div>
+<div><span>↻</span>Possibilidade de identificar demandas recorrentes e oportunidades de melhoria.</div>
+</div>
+</section>
+
+<section id="s5">
+<h2><span class="n">5</span>Implantação da proposta</h2>
+<p class="lead">A migração poderá acontecer gradualmente, direcionando as novas solicitações operacionais para o New Space e orientando as equipes sobre quais situações devem gerar abertura de tarefa.</p>
+<div class="box">O objetivo é criar uma rotina em que o Discord seja utilizado principalmente para comunicação, enquanto o New Space seja o ambiente de registro, execução e acompanhamento das demandas.</div>
+</section>
+
+<footer>Proposta de centralização das demandas operacionais no New Space</footer>
+</div>
+
+<script>
+/* ===== Dados base ===== */
+const cats=[
+["Solicitação de efetivação de parcelamento","Quando houver necessidade de realizar ou concluir um parcelamento de débitos de uma empresa.",["Efetivar um parcelamento previamente simulado.","Realizar a adesão a um parcelamento solicitado.","Concluir o procedimento de parcelamento junto ao órgão responsável."]],
+["Solicitação de simulação e análise de apuração de impostos","Quando houver necessidade de analisar informações fiscais, conferir valores de faturamento e realizar simulações para identificar possíveis diferenças, correções e impactos financeiros para a empresa.",["Comparar os valores informados nas declarações com o total das notas fiscais emitidas.","Verificar diferenças entre o faturamento declarado e o faturamento efetivo.","Simular possíveis alterações ou retificações nas declarações.","Calcular valores adicionais de impostos a pagar ou valores que podem ser compensados.","Avaliar o impacto financeiro de possíveis correções na apuração dos impostos."]],
+["Solicitação de emissão ou atualização de guias fora do sistema","Quando houver necessidade de emitir ou atualizar guias que não podem ser solicitadas pelo fluxo habitual do sistema, exigindo atuação manual do contador.",["Emitir guias de impostos que já foram marcadas como pagas pelo cliente no sistema, impossibilitando uma nova solicitação pelo fluxo normal.","Emitir guias de multas antigas ou débitos de períodos anteriores.","Gerar guias referentes a pendências fiscais que não estão disponíveis para solicitação pelo sistema.","Atualizar ou reemitir guias vencidas que não podem ser geradas novamente pelo processo habitual.","Emitir guias específicas que dependam de consulta ou geração diretamente nos portais dos órgãos responsáveis."]],
+["Verificação e declaração de impostos por fora do sistema","Quando houver necessidade de verificar impostos de períodos anteriores ou declarações realizadas fora da contabilidade atual, incluindo situações em que o cliente opte por contratar a declaração desses períodos com a empresa, exigindo que o procedimento seja realizado fora do fluxo habitual do sistema.",["Conferir impostos declarados por outro escritório ou contador.","Verificar períodos anteriores à entrada da empresa na contabilidade.","Identificar a necessidade de realizar declarações de períodos retroativos.","Avaliar impostos que ainda não foram declarados e verificar a possibilidade de realizar a declaração pela contabilidade atual.","Realizar declarações de períodos anteriores quando o cliente optar por contratar esse serviço.","Conferir valores declarados ou recolhidos e identificar eventuais diferenças ou valores pendentes."]],
+["Solicitação de regularização de pendências fiscais","Quando a empresa apresentar débitos, pendências ou inconsistências fiscais que exijam investigação e atuação do contador para regularização.",["Identificar a origem de uma pendência fiscal.","Analisar débitos em aberto.","Verificar notificações ou cobranças dos órgãos fiscais.","Investigar divergências entre informações do sistema contábil e dos portais fiscais.","Verificar divergências entre valores de impostos e pagamentos realizados.","Identificar as providências necessárias para regularizar a situação.","Acompanhar a resolução da pendência."]],
+["Solicitação de cancelamento ou correção de notas fiscais","Quando houver necessidade de cancelar uma nota fiscal ou corrigir informações relacionadas à sua emissão.",["Solicitar o cancelamento de uma nota fiscal emitida incorretamente.","Verificar a possibilidade de correção de informações.","Executar os procedimentos necessários para resolver problemas na emissão."]]
+];
+/* ===== Persistência (Supabase) =====
+   Preencha SUPABASE.url e SUPABASE.key (chave PUBLISHABLE, nunca a secret) para salvar online.
+   Em branco, funciona só no navegador local (localStorage). */
+const SUPABASE={url:"https://omuervxdymktsqtncwtt.supabase.co",key:"sb_publishable_iVcuFwvfcdzwQ8AlZv0mcA_JcQUadFC"};
+const KEY="proposta-new-space:v2";
+const on=()=>!!(SUPABASE.url&&SUPABASE.key);
+const sb=async(path,method="GET",body)=>{
+ if(!on())return null;
+ try{
+  const r=await fetch(SUPABASE.url.replace(/\/$/,"")+"/rest/v1/"+path,{method,headers:{apikey:SUPABASE.key,"Content-Type":"application/json",...(method==="GET"?{}:{Prefer:"return=minimal"})},body:body?JSON.stringify(body):undefined});
+  if(!r.ok){console.warn("Supabase",r.status,await r.text());return null;}
+  return method==="GET"?await r.json():true;
+ }catch(e){console.warn("Supabase indisponível",e);return null;}
+};
+const toC=r=>({id:r.id,author:r.autor,text:r.texto,ts:Number(r.criado_em),done:!!r.concluido,doneBy:r.concluido_por,doneAt:r.concluido_em?Number(r.concluido_em):null});
+const groupC=rows=>{const t={};rows.forEach(r=>(t[r.chave]=t[r.chave]||[]).push(toC(r)));return t;};
+const Store={
+ async load(){
+  const cm=await sb("comentarios?select=*&order=criado_em.asc"),ex=await sb("solicitacoes_extras?select=*&order=created_at.asc");
+  if(cm&&ex)return {threads:groupC(cm),custom:ex.map(r=>({id:r.id,t:r.titulo,d:r.descricao||"",e:r.exemplos||[]}))};
+  try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}
+ },
+ cache(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}},
+ async addCustom(c){this.cache();await sb("solicitacoes_extras","POST",{id:c.id,titulo:c.t,descricao:c.d,exemplos:c.e});},
+ async removeCustom(id){this.cache();await sb("solicitacoes_extras?id=eq."+encodeURIComponent(id),"DELETE");},
+ async addComment(key,c){this.cache();await sb("comentarios","POST",{id:c.id,chave:key,autor:c.author,texto:c.text,criado_em:c.ts});},
+ async updateComment(key,id,p){this.cache();await sb("comentarios?id=eq."+encodeURIComponent(id),"PATCH",{concluido:p.done,concluido_por:p.doneBy,concluido_em:p.doneAt});}
+};
+const state={custom:[],threads:{}};
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=ts=>new Date(ts).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
+const getName=()=>{try{return localStorage.getItem("np-autor")||"";}catch(e){return "";}};
+const setName=n=>{try{localStorage.setItem("np-autor",n);}catch(e){}};
+
+/* ===== Conversas (comentários) ===== */
+function msgHTML(c){
+ const d=c.done;
+ return `<div class="msg${d?" done":""}" data-id="${c.id}"><div class="meta"><b>${esc(c.author)}</b><span>${fmt(c.ts)}</span></div><div class="txt">${esc(c.text)}</div><div class="foot">${d?`<span class="badge">✓ Concluído por ${esc(c.doneBy||"")} em ${fmt(c.doneAt)}</span><button type="button" class="dbtn" data-act="reopen">Reabrir</button>`:`<button type="button" class="dbtn" data-act="done">Concluir</button>`}</div></div>`;
+}
+function threadHTML(key){
+ return `<div class="thread" data-key="${key}"><div class="msgs">${(state.threads[key]||[]).map(msgHTML).join("")}</div><div class="composer"><input type="text" class="who" maxlength="40" placeholder="Seu nome" value="${esc(getName())}" aria-label="Seu nome"><textarea rows="1" class="txt-in" placeholder="Escreva um comentário e pressione Enter" aria-label="Comentário"></textarea><button type="button" class="b-main send">Enviar</button><div class="hint">Enter envia · Shift+Enter quebra a linha</div></div></div>`;
+}
+function mountThreads(){document.querySelectorAll(".thread-slot").forEach(el=>{el.innerHTML=threadHTML(el.dataset.key);});}
+function refreshMsgs(key){
+ const t=document.querySelector(`.thread[data-key="${key}"] .msgs`);
+ if(t)t.innerHTML=(state.threads[key]||[]).map(msgHTML).join("");
+}
+function post(th){
+ const key=th.dataset.key,who=th.querySelector(".who"),ta=th.querySelector(".txt-in");
+ const author=who.value.trim(),text=ta.value.trim();
+ if(!author){who.focus();return;}
+ if(!text){ta.focus();return;}
+ setName(author);
+ document.querySelectorAll(".who").forEach(i=>{if(!i.value.trim())i.value=author;});
+ const c={id:"m"+Date.now()+Math.random().toString(36).slice(2,6),author,text,ts:Date.now(),done:false};
+ (state.threads[key]=state.threads[key]||[]).push(c);
+ ta.value="";refreshMsgs(key);Store.addComment(key,c);
+}
+document.addEventListener("keydown",ev=>{
+ if(ev.key==="Enter"&&!ev.shiftKey&&ev.target.classList&&ev.target.classList.contains("txt-in")){ev.preventDefault();post(ev.target.closest(".thread"));}
+});
+document.addEventListener("click",ev=>{
+ const s=ev.target.closest(".send");
+ if(s){post(s.closest(".thread"));return;}
+ const b=ev.target.closest(".dbtn");if(!b)return;
+ const th=b.closest(".thread"),key=th.dataset.key,id=b.closest(".msg").dataset.id;
+ const c=(state.threads[key]||[]).find(x=>x.id===id);if(!c)return;
+ let patch;
+ if(b.dataset.act==="done"){
+  let n=getName();if(!n){n=(prompt("Seu nome:")||"").trim();if(!n)return;setName(n);}
+  patch={done:true,doneBy:n,doneAt:Date.now()};
+ }else patch={done:false,doneBy:null,doneAt:null};
+ Object.assign(c,patch);refreshMsgs(key);Store.updateComment(key,id,patch);
+});
+
+/* ===== Cards ===== */
+function card(c,i,custom){
+ const k=custom?c.id:"b"+i;
+ return `<article class="card${custom?" custom":""}"><div class="num">${String(i+1).padStart(2,"0")}${custom?`<button type="button" class="rm" data-id="${c.id}" title="Remover">Remover</button>`:""}</div><h3>${esc(c.t)}</h3><p>${esc(c.d)}</p><h4>Exemplos</h4><ul>${c.e.map(e=>`<li>${esc(e)}</li>`).join("")}</ul><div class="cnote"><label>Comentários desta solicitação</label><div class="thread-slot" data-key="${k}"></div></div></article>`;
+}
+function render(){
+ const base=cats.map((c,i)=>card({t:c[0],d:c[1],e:c[2]},i,false));
+ const extra=state.custom.map((c,i)=>card(c,cats.length+i,true));
+ $("cards").innerHTML=base.concat(extra).join("");
+ mountThreads();
+}
+
+/* ===== Nova solicitação ===== */
+$("addBtn").onclick=()=>{const f=$("addForm");f.hidden=!f.hidden;$("addBtn").setAttribute("aria-expanded",String(!f.hidden));if(!f.hidden)$("fTitle").focus();};
+const closeForm=()=>{$("addForm").hidden=true;$("addBtn").setAttribute("aria-expanded","false");["fTitle","fDesc","fEx"].forEach(k=>$(k).value="");};
+$("fCancel").onclick=closeForm;
+$("fSave").onclick=()=>{
+ const t=$("fTitle").value.trim();
+ if(!t){$("fTitle").focus();return;}
+ const e=$("fEx").value.split("\n").map(x=>x.trim()).filter(Boolean);
+ state.custom.push({id:"c"+Date.now(),t,d:$("fDesc").value.trim(),e});
+ const nc=state.custom[state.custom.length-1];closeForm();render();Store.addCustom(nc);
+};
+$("cards").addEventListener("click",ev=>{
+ const b=ev.target.closest(".rm");if(!b)return;
+ if(confirm("Remover esta solicitação e seus comentários?")){const rid=b.dataset.id;state.custom=state.custom.filter(c=>c.id!==rid);delete state.threads[rid];render();Store.removeCustom(rid);}
+});
+
+/* ===== Inicialização ===== */
+(async()=>{
+ const d=await Store.load();
+ state.custom=Array.isArray(d.custom)?d.custom:[];
+ state.threads=d.threads&&typeof d.threads==="object"?d.threads:{};
+ render();
+ if(on())setInterval(async()=>{const cm=await sb("comentarios?select=*&order=criado_em.asc");if(!cm)return;state.threads=groupC(cm);document.querySelectorAll(".thread").forEach(t=>refreshMsgs(t.dataset.key));},20000);
+})();
+</script>
+</body>
+</html>
