@@ -70,9 +70,21 @@ input[type=text]:focus,.extras textarea:focus{outline:2px solid var(--p-m);outli
 .comments textarea{margin-top:4px}
 .status{display:block;margin-top:6px;color:var(--mut);min-height:1em}
 .print-comment{display:none;white-space:pre-wrap;font-size:.92rem}
-.rm{float:right;background:none;border:0;color:var(--mut);cursor:pointer;font-size:.8rem}
+.acts{float:right;display:flex;gap:14px}
+.rm{background:none;border:0;color:var(--mut);cursor:pointer;font-size:.8rem}
 .rm:hover{color:var(--p-d)}
 .card.custom{border-top-color:var(--p-d)}
+.card .num{display:flow-root}
+.eform,.rform{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--p-xl);display:grid;gap:10px}
+.eform[hidden],.rform[hidden]{display:none}
+.eform label,.rform label{display:grid;gap:4px;font-size:.78rem;font-weight:600;color:var(--p-d)}
+.eform textarea,.rform textarea{font:inherit;font-size:.9rem;color:var(--ink);border:1px solid var(--p-l);border-radius:8px;padding:8px 10px;background:#fff;width:100%;resize:vertical}
+.rform p{font-size:.82rem;color:var(--mut);margin:0}
+.edited{font-size:.76rem;color:var(--mut);margin-top:8px}
+.card.removed{background:#f7f4f8;border-top-color:#b9aec2;color:var(--mut)}
+.card.removed .strike{text-decoration:line-through}
+.cnote .composer{grid-template-columns:1fr auto}
+.cnote .composer .who{grid-column:1/-1}
 .thread .msgs{display:grid;gap:10px;margin:10px 0}
 .thread .msgs:empty{display:none}
 .msg{border:1px solid var(--line);border-left:4px solid var(--p);border-radius:10px;padding:10px 14px;background:#fff;font-size:.9rem}
@@ -97,7 +109,8 @@ input[type=text]:focus,.extras textarea:focus{outline:2px solid var(--p-m);outli
 @media print{
 body{background:#fff;font-size:10.5pt}
 .page{max-width:none;box-shadow:none}
-.pbtn,nav,.add-wrap,.rm,.status,#comments,.composer,.dbtn{display:none!important}
+.pbtn,nav,.add-wrap,.rm,.status,#comments,.composer,.dbtn,.eform,.rform,.acts{display:none!important}
+.card.removed{display:none}
 .print-comment{display:block}
 .cnote:not(:has(.msg)){display:none}
 .msg{break-inside:avoid;page-break-inside:avoid}
@@ -218,29 +231,33 @@ const cats=[
 const SUPABASE={url:"https://omuervxdymktsqtncwtt.supabase.co",key:"sb_publishable_iVcuFwvfcdzwQ8AlZv0mcA_JcQUadFC"};
 const KEY="proposta-new-space:v2";
 const on=()=>!!(SUPABASE.url&&SUPABASE.key);
-const sb=async(path,method="GET",body)=>{
+const sb=async(path,method="GET",body,prefer)=>{
  if(!on())return null;
  try{
-  const r=await fetch(SUPABASE.url.replace(/\/$/,"")+"/rest/v1/"+path,{method,headers:{apikey:SUPABASE.key,"Content-Type":"application/json",...(method==="GET"?{}:{Prefer:"return=minimal"})},body:body?JSON.stringify(body):undefined});
+  const r=await fetch(SUPABASE.url.replace(/\/$/,"")+"/rest/v1/"+path,{method,headers:{apikey:SUPABASE.key,"Content-Type":"application/json",...(method==="GET"?{}:{Prefer:prefer||"return=minimal"})},body:body?JSON.stringify(body):undefined});
   if(!r.ok){console.warn("Supabase",r.status,await r.text());return null;}
   return method==="GET"?await r.json():true;
  }catch(e){console.warn("Supabase indisponível",e);return null;}
 };
 const toC=r=>({id:r.id,author:r.autor,text:r.texto,ts:Number(r.criado_em),done:!!r.concluido,doneBy:r.concluido_por,doneAt:r.concluido_em?Number(r.concluido_em):null});
+const toX=r=>({id:r.id,t:r.titulo,d:r.descricao||"",e:r.exemplos||[],editedBy:r.editado_por||null,editedAt:r.editado_em?Number(r.editado_em):null,removed:r.removida?{by:r.removida_por,reason:r.removida_motivo,ts:Number(r.removida_em)}:null});
 const groupC=rows=>{const t={};rows.forEach(r=>(t[r.chave]=t[r.chave]||[]).push(toC(r)));return t;};
 const Store={
  async load(){
-  const cm=await sb("comentarios?select=*&order=criado_em.asc"),ex=await sb("solicitacoes_extras?select=*&order=created_at.asc");
-  if(cm&&ex)return {threads:groupC(cm),custom:ex.map(r=>({id:r.id,t:r.titulo,d:r.descricao||"",e:r.exemplos||[]}))};
+  const cm=await sb("comentarios?select=*&order=criado_em.asc"),ex=await sb("solicitacoes_extras?select=*&order=created_at.asc"),aj=(await sb("ajustes_solicitacoes?select=*"))||[];
+  if(cm&&ex){const ov={};aj.forEach(r=>ov[r.chave]={t:r.titulo,d:r.descricao||"",e:r.exemplos||[],by:r.editado_por,ts:r.editado_em?Number(r.editado_em):null});return {threads:groupC(cm),custom:ex.map(toX),overrides:ov};}
   try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}
  },
  cache(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}},
  async addCustom(c){this.cache();await sb("solicitacoes_extras","POST",{id:c.id,titulo:c.t,descricao:c.d,exemplos:c.e});},
- async removeCustom(id){this.cache();await sb("solicitacoes_extras?id=eq."+encodeURIComponent(id),"DELETE");},
+ async editCustom(c){this.cache();await sb("solicitacoes_extras?id=eq."+encodeURIComponent(c.id),"PATCH",{titulo:c.t,descricao:c.d,exemplos:c.e,editado_por:c.editedBy,editado_em:c.editedAt});},
+ async editBase(k,o){this.cache();await sb("ajustes_solicitacoes?on_conflict=chave","POST",{chave:k,titulo:o.t,descricao:o.d,exemplos:o.e,editado_por:o.by,editado_em:o.ts},"resolution=merge-duplicates,return=minimal");},
+ async removeCustom(c){this.cache();const r=c.removed;await sb("solicitacoes_extras?id=eq."+encodeURIComponent(c.id),"PATCH",{removida:true,removida_por:r.by,removida_motivo:r.reason,removida_em:r.ts});},
+ async restoreCustom(c){this.cache();await sb("solicitacoes_extras?id=eq."+encodeURIComponent(c.id),"PATCH",{removida:false,removida_por:null,removida_motivo:null,removida_em:null});},
  async addComment(key,c){this.cache();await sb("comentarios","POST",{id:c.id,chave:key,autor:c.author,texto:c.text,criado_em:c.ts});},
  async updateComment(key,id,p){this.cache();await sb("comentarios?id=eq."+encodeURIComponent(id),"PATCH",{concluido:p.done,concluido_por:p.doneBy,concluido_em:p.doneAt});}
 };
-const state={custom:[],threads:{}};
+const state={custom:[],threads:{},overrides:{}};
 const $=id=>document.getElementById(id);
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=ts=>new Date(ts).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
@@ -289,15 +306,19 @@ document.addEventListener("click",ev=>{
 });
 
 /* ===== Cards ===== */
-function card(c,i,custom){
- const k=custom?c.id:"b"+i;
- return `<article class="card${custom?" custom":""}"><div class="num">${String(i+1).padStart(2,"0")}${custom?`<button type="button" class="rm" data-id="${c.id}" title="Remover">Remover</button>`:""}</div><h3>${esc(c.t)}</h3><p>${esc(c.d)}</p><h4>Exemplos</h4><ul>${c.e.map(e=>`<li>${esc(e)}</li>`).join("")}</ul><div class="cnote"><label>Comentários desta solicitação</label><div class="thread-slot" data-key="${k}"></div></div></article>`;
+const baseOf=i=>{const o=state.overrides["b"+i];return o?{t:o.t,d:o.d,e:o.e,editedBy:o.by,editedAt:o.ts}:{t:cats[i][0],d:cats[i][1],e:cats[i][2]};};
+const FORMS='<form class="eform" hidden onsubmit="return false"><label>Título<input type="text" class="e-t"></label><label>Descrição<textarea rows="3" class="e-d"></textarea></label><label>Exemplos (um por linha)<textarea rows="5" class="e-e"></textarea></label><label>Seu nome<input type="text" class="e-who" maxlength="40"></label><div class="row"><button type="button" class="b-main e-save">Salvar alterações</button><button type="button" class="b-ghost e-cancel">Cancelar</button></div></form>';
+const RFORM='<form class="rform" hidden onsubmit="return false"><p>A remoção fica registrada com seu nome e a justificativa, e pode ser desfeita depois.</p><label>Seu nome<input type="text" class="r-who" maxlength="40"></label><label>Justificativa da remoção<textarea rows="3" class="r-why"></textarea></label><div class="row"><button type="button" class="b-main r-ok">Confirmar remoção</button><button type="button" class="b-ghost r-cancel">Cancelar</button></div></form>';
+function card(c,n,k,custom){
+ if(c.removed)return `<article class="card removed" data-k="${k}"><div class="num">—</div><h3 class="strike">${esc(c.t)}</h3><p>Solicitação removida por <b>${esc(c.removed.by)}</b> em ${fmt(c.removed.ts)}.</p><p><b>Justificativa:</b> ${esc(c.removed.reason)}</p><button type="button" class="dbtn restore" data-id="${c.id}">Restaurar</button></article>`;
+ const ed=c.editedBy?`<div class="edited">Editado por ${esc(c.editedBy)} em ${fmt(c.editedAt)}</div>`:"";
+ return `<article class="card${custom?" custom":""}" data-k="${k}"><div class="num"><span>${String(n).padStart(2,"0")}</span><span class="acts"><button type="button" class="rm" data-act="edit">Editar</button>${custom?'<button type="button" class="rm" data-act="remove">Remover</button>':""}</span></div><h3>${esc(c.t)}</h3><p>${esc(c.d)}</p><h4>Exemplos</h4><ul>${c.e.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>${ed}${FORMS}${RFORM}<div class="cnote"><label>Comentários desta solicitação</label><div class="thread-slot" data-key="${k}"></div></div></article>`;
 }
 function render(){
- const base=cats.map((c,i)=>card({t:c[0],d:c[1],e:c[2]},i,false));
- const extra=state.custom.map((c,i)=>card(c,cats.length+i,true));
- $("cards").innerHTML=base.concat(extra).join("");
- mountThreads();
+ let n=0;const h=[];
+ cats.forEach((_,i)=>{n++;h.push(card(baseOf(i),n,"b"+i,false));});
+ state.custom.forEach(c=>{if(c.removed)h.push(card(c,0,c.id,true));else{n++;h.push(card(c,n,c.id,true));}});
+ $("cards").innerHTML=h.join("");mountThreads();
 }
 
 /* ===== Nova solicitação ===== */
@@ -311,16 +332,47 @@ $("fSave").onclick=()=>{
  state.custom.push({id:"c"+Date.now(),t,d:$("fDesc").value.trim(),e});
  const nc=state.custom[state.custom.length-1];closeForm();render();Store.addCustom(nc);
 };
+const findItem=k=>k[0]==="b"&&/^b\d+$/.test(k)?baseOf(+k.slice(1)):state.custom.find(c=>c.id===k);
 $("cards").addEventListener("click",ev=>{
- const b=ev.target.closest(".rm");if(!b)return;
- if(confirm("Remover esta solicitação e seus comentários?")){const rid=b.dataset.id;state.custom=state.custom.filter(c=>c.id!==rid);delete state.threads[rid];render();Store.removeCustom(rid);}
+ const art=ev.target.closest("article");if(!art)return;
+ const k=art.dataset.k,q=x=>art.querySelector(x);
+ const rs=ev.target.closest(".restore");
+ if(rs){
+  let n=getName();if(!n){n=(prompt("Seu nome:")||"").trim();if(!n)return;setName(n);}
+  const c=state.custom.find(x=>x.id===rs.dataset.id);if(!c)return;
+  c.removed=null;render();Store.restoreCustom(c);return;
+ }
+ const b=ev.target.closest("button");if(!b)return;
+ if(b.dataset.act==="edit"){
+  const it=findItem(k);q(".rform").hidden=true;
+  q(".e-t").value=it.t;q(".e-d").value=it.d;q(".e-e").value=it.e.join("\n");q(".e-who").value=getName();
+  q(".eform").hidden=false;q(".e-t").focus();
+ }else if(b.dataset.act==="remove"){
+  q(".eform").hidden=true;q(".r-who").value=getName();q(".rform").hidden=false;q(".r-why").focus();
+ }else if(b.classList.contains("e-cancel")){q(".eform").hidden=true;
+ }else if(b.classList.contains("r-cancel")){q(".rform").hidden=true;
+ }else if(b.classList.contains("e-save")){
+  const t=q(".e-t").value.trim(),who=q(".e-who").value.trim();
+  if(!t){q(".e-t").focus();return;}
+  if(!who){q(".e-who").focus();return;}
+  setName(who);
+  const d=q(".e-d").value.trim(),e=q(".e-e").value.split("\n").map(x=>x.trim()).filter(Boolean),ts=Date.now();
+  if(/^b\d+$/.test(k)){const o={t,d,e,by:who,ts};state.overrides[k]=o;render();Store.editBase(k,o);}
+  else{const c=state.custom.find(x=>x.id===k);Object.assign(c,{t,d,e,editedBy:who,editedAt:ts});render();Store.editCustom(c);}
+ }else if(b.classList.contains("r-ok")){
+  const who=q(".r-who").value.trim(),why=q(".r-why").value.trim();
+  if(!who){q(".r-who").focus();return;}
+  if(!why){q(".r-why").focus();return;}
+  setName(who);
+  const c=state.custom.find(x=>x.id===k);c.removed={by:who,reason:why,ts:Date.now()};render();Store.removeCustom(c);
+ }
 });
 
 /* ===== Inicialização ===== */
 (async()=>{
  const d=await Store.load();
  state.custom=Array.isArray(d.custom)?d.custom:[];
- state.threads=d.threads&&typeof d.threads==="object"?d.threads:{};
+ state.threads=d.threads&&typeof d.threads==="object"?d.threads:{};state.overrides=d.overrides&&typeof d.overrides==="object"?d.overrides:{};
  render();
  if(on())setInterval(async()=>{const cm=await sb("comentarios?select=*&order=criado_em.asc");if(!cm)return;state.threads=groupC(cm);document.querySelectorAll(".thread").forEach(t=>refreshMsgs(t.dataset.key));},20000);
 })();
